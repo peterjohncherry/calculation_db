@@ -1,4 +1,6 @@
 from cinfo import CalcInfo
+from calc_info_reader import CalcInfoReader as reader
+
 
 class CalcDB:
 
@@ -12,6 +14,9 @@ class CalcDB:
         calcinfo_list = [CalcInfo('H2O', 'Free Energy', 'ReSpect-mDKS', 'DFT'),
                          CalcInfo('H2O+', 'Free Energy', 'ReSpect-mDKS', 'DFT'),
                          CalcInfo('H3', 'Free Energy', 'ReSpect-mDKS', 'DFT')]
+
+        cinfo_test = reader('CalcExample.yaml')
+        calcinfo_list.append(cinfo_test.get_cinfo())
 
         for ci in calcinfo_list:
             self.insert_calc_info(ci)

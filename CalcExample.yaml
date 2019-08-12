@@ -1,0 +1,4 @@
+system_name: 'O2'
+calc_type: 'Free Energy'
+program: 'ReSpect-mDKS'
+method: 'DFT'
