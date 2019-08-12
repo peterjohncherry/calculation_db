@@ -2,6 +2,7 @@
   <dictionary name="peter">
     <words>
       <w>calcs</w>
+      <w>cinfo</w>
       <w>dbconfig</w>
       <w>postgre</w>
       <w>postgresql</w>

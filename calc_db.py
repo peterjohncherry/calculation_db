@@ -9,13 +9,15 @@ class CalcDB:
         self.conn = connection
 
     def initialize_table(self):
-       # self.c.execute("""CREATE TABLE calcs(system_name TEXT, calc_type TEXT, program TEXT, method TEXT, name TEXT);""")
+        self.c.execute("""CREATE TABLE calcs(system_name TEXT, calc_type TEXT, program TEXT, method TEXT, name TEXT);""")
+
+    def initial_test(self):
 
         calcinfo_list = [CalcInfo('H2O', 'Free Energy', 'ReSpect-mDKS', 'DFT'),
                          CalcInfo('H2O+', 'Free Energy', 'ReSpect-mDKS', 'DFT'),
                          CalcInfo('H3', 'Free Energy', 'ReSpect-mDKS', 'DFT')]
 
-        cinfo_test = reader('CalcExample.yaml')
+        cinfo_test = reader('CalcExample')
         calcinfo_list.append(cinfo_test.get_cinfo())
 
         for ci in calcinfo_list:
