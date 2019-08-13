@@ -1,4 +1,4 @@
-system_name: 'O2'
+system_name: 'CO'
 calc_type: 'Free Energy'
 program: 'ReSpect-mDKS'
-method: 'DFT'
+method: 'HF'

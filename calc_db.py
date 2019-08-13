@@ -9,10 +9,12 @@ class CalcDB:
         self.conn = connection
 
     def initialize_table(self):
-        self.c.execute("""CREATE TABLE calcs(system_name TEXT, calc_type TEXT, program TEXT, method TEXT, name TEXT);""")
+        print ("initializing table")
+        with self.conn:
+            self.c.execute("""CREATE TABLE IF NOT EXISTS calcs(system_name TEXT, calc_type TEXT, program TEXT, method TEXT, name TEXT);""")
 
     def initial_test(self):
-
+        print("into initial test")
         calcinfo_list = [CalcInfo('H2O', 'Free Energy', 'ReSpect-mDKS', 'DFT'),
                          CalcInfo('H2O+', 'Free Energy', 'ReSpect-mDKS', 'DFT'),
                          CalcInfo('H3', 'Free Energy', 'ReSpect-mDKS', 'DFT')]
@@ -27,6 +29,7 @@ class CalcDB:
 
     def insert_calc_info(self, ci):
         with self.conn:
+            self.c.execute("""DELETE FROM calcs ;""")
             self.c.execute("INSERT INTO calcs VALUES (%s, %s, %s, %s, %s);",
                            (ci.system_name, ci.calc_type, ci.program, ci.method, ci.name))
             #self.c.execute("INSERT INTO calcs VALUES (:system_name, :calc_type, :program, :method, :name )",

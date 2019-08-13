@@ -20,6 +20,7 @@ def connect():
 
         db = CalcDB(conn, cur)
         db.initialize_table()
+        db.initial_test()
 
     except (Exception, psycopg2.DatabaseError) as error:
         print(error)
