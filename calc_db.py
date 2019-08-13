@@ -15,7 +15,7 @@ class CalcDB:
             self.c.execute("""DROP TABLE IF EXISTS base;""")
             self.c.execute("""DROP TABLE IF EXISTS inp;""")
             self.c.execute("""DROP TABLE IF EXISTS program;""")
-            self.c.execute( """ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";""")
+            self.c.execute("""CREATE EXTENSION IF NOT EXISTS "uuid-ossp";""")
             self.c.execute("""
                             create table inp(   
                                             inp_uid UUID NOT NULL PRIMARY KEY,
@@ -47,25 +47,22 @@ class CalcDB:
 
     def initial_test(self):
         print("into initial test")
-        calcinfo_list = [BaseInfo('H2O', 'Free Energy', 'ReSpect-mDKS', 'DFT'),
-                         BaseInfo('H2O+', 'Free Energy', 'ReSpect-mDKS', 'DFT'),
-                         BaseInfo('H3', 'Free Energy', 'ReSpect-mDKS', 'DFT')]
-
+        calcinfo_list = [BaseInfo('H2O',  'Free Energy', 'ReSpect-mDKS')]
         cinfo_test = reader('CO')
         calcinfo_list.append(cinfo_test.get_cinfo())
 
+        print("len(calcinfo_list) = ", len(calcinfo_list))
         for ci in calcinfo_list:
             self.insert_calc_info(ci)
 
-        print(self.get_all_calcs())
+        print(self.get_all_info('base'))
 
     def insert_calc_info(self, ci):
         with self.conn:
-            self.c.execute("""DELETE FROM calcs ;""")
-            self.c.execute("INSERT INTO base (base_uid, name, system_name, calc_type) "
-                           "VALUES ( uuid_generate_v4(), %s, %s, %s);",
+            self.c.execute("INSERT INTO base VALUES ( uuid_generate_v4(), %s, %s, %s )",
                            (ci.name, ci.system_name, ci.calc_type))
 
-    def get_all_calcs(self):
-        self.c.execute("SELECT * FROM calcs")
+    def get_all_info(self, table_name):
+        self.c.execute("SELECT * FROM "+str(table_name)+";")
         return self.c.fetchall()
+
