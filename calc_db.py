@@ -1,4 +1,4 @@
-from cinfo import CalcInfo
+from cinfo import BaseInfo, InpInfo
 from calc_info_reader import CalcInfoReader as reader
 
 
@@ -14,7 +14,8 @@ class CalcDB:
         with self.conn:
             self.c.execute("""DROP TABLE IF EXISTS base;""")
             self.c.execute("""DROP TABLE IF EXISTS inp;""")
-            self.c.execute( """ CREATE EXTENSION "uuid-ossp";""")
+            self.c.execute("""DROP TABLE IF EXISTS program;""")
+            self.c.execute( """ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";""")
             self.c.execute("""
                             create table inp(   
                                             inp_uid UUID NOT NULL PRIMARY KEY,
@@ -25,24 +26,32 @@ class CalcDB:
                                             charge NUMERIC(2, 1),
                                             UNIQUE(inp_uid)
                                             );
+                            create table program(
+                                                program_uid UUID NOT NULL PRIMARY KEY,
+                                                program_name VARCHAR(50),
+                                                program_version VARCHAR(50),
+                                                git_commit VARCHAR(50),
+                                                UNIQUE(program_uid)
+                                                );
                             create table base(
                                                 base_uid UUID NOT NULL PRIMARY KEY,
                                                 name VARCHAR(50) NOT NULL,
                                                 system_name VARCHAR(50) NOT NULL,
                                                 calc_type VARCHAR(50) NOT NULL,
                                                 inp_uid UUID REFERENCES inp(inp_uid),
-                                                UNIQUE(inp_uid),
+                                                program_uid UUID REFERENCES program(program_uid),
                                                 UNIQUE(base_uid)
                                                 );
+
             """)
 
     def initial_test(self):
         print("into initial test")
-        calcinfo_list = [CalcInfo('H2O', 'Free Energy', 'ReSpect-mDKS', 'DFT'),
-                         CalcInfo('H2O+', 'Free Energy', 'ReSpect-mDKS', 'DFT'),
-                         CalcInfo('H3', 'Free Energy', 'ReSpect-mDKS', 'DFT')]
+        calcinfo_list = [BaseInfo('H2O', 'Free Energy', 'ReSpect-mDKS', 'DFT'),
+                         BaseInfo('H2O+', 'Free Energy', 'ReSpect-mDKS', 'DFT'),
+                         BaseInfo('H3', 'Free Energy', 'ReSpect-mDKS', 'DFT')]
 
-        cinfo_test = reader('CalcExample')
+        cinfo_test = reader('CO')
         calcinfo_list.append(cinfo_test.get_cinfo())
 
         for ci in calcinfo_list:
@@ -53,15 +62,10 @@ class CalcDB:
     def insert_calc_info(self, ci):
         with self.conn:
             self.c.execute("""DELETE FROM calcs ;""")
-            self.c.execute("INSERT INTO inp (inp_uid, method, nucleus_model, initialization, multiplicity, charge) "
-                           "VALUES ( uuid_generate_v4(), %s, %s, %s, %s, %s);",
-                           (ci.system_name, ci.calc_type, ci.program, ci.method, ci.name))
-            #self.c.execute("INSERT INTO calcs VALUES (:system_name, :calc_type, :program, :method, :name )",
-                           #{'system_name': ci.system_name, 'calc_type': ci.calc_type, 'program': ci.program, 'method': ci.method, 'name': ci.name})
+            self.c.execute("INSERT INTO base (base_uid, name, system_name, calc_type) "
+                           "VALUES ( uuid_generate_v4(), %s, %s, %s);",
+                           (ci.name, ci.system_name, ci.calc_type))
 
     def get_all_calcs(self):
         self.c.execute("SELECT * FROM calcs")
         return self.c.fetchall()
-
-
-
