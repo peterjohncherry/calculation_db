@@ -1,7 +1,6 @@
 import yaml
 import cinfo
 
-
 class CalcInfoReader:
 
     def __init__(self, seedname, props=None):
@@ -13,7 +12,7 @@ class CalcInfoReader:
         self.data = None
         self.inp_data = None
 
-        base_file_name = seedname+'.yaml'
+        base_file_name = seedname+'_base'
         with open(base_file_name) as f:
             self.data = yaml.load(f, Loader=yaml.Loader)
 

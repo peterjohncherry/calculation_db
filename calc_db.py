@@ -10,8 +10,31 @@ class CalcDB:
 
     def initialize_table(self):
         print ("initializing table")
+
         with self.conn:
-            self.c.execute("""CREATE TABLE IF NOT EXISTS calcs(system_name TEXT, calc_type TEXT, program TEXT, method TEXT, name TEXT);""")
+            self.c.execute("""DROP TABLE IF EXISTS base;""")
+            self.c.execute("""DROP TABLE IF EXISTS inp;""")
+            self.c.execute( """ CREATE EXTENSION "uuid-ossp";""")
+            self.c.execute("""
+                            create table inp(   
+                                            inp_uid UUID NOT NULL PRIMARY KEY,
+                                            method VARCHAR(100) NOT NULL,            
+                                            nucleus_model VARCHAR(100),
+                                            initialization VARCHAR(100),
+                                            multiplicity NUMERIC(1),
+                                            charge NUMERIC(2, 1),
+                                            UNIQUE(inp_uid)
+                                            );
+                            create table base(
+                                                base_uid UUID NOT NULL PRIMARY KEY,
+                                                name VARCHAR(50) NOT NULL,
+                                                system_name VARCHAR(50) NOT NULL,
+                                                calc_type VARCHAR(50) NOT NULL,
+                                                inp_uid UUID REFERENCES inp(inp_uid),
+                                                UNIQUE(inp_uid),
+                                                UNIQUE(base_uid)
+                                                );
+            """)
 
     def initial_test(self):
         print("into initial test")
@@ -30,7 +53,8 @@ class CalcDB:
     def insert_calc_info(self, ci):
         with self.conn:
             self.c.execute("""DELETE FROM calcs ;""")
-            self.c.execute("INSERT INTO calcs VALUES (%s, %s, %s, %s, %s);",
+            self.c.execute("INSERT INTO inp (inp_uid, method, nucleus_model, initialization, multiplicity, charge) "
+                           "VALUES ( uuid_generate_v4(), %s, %s, %s, %s, %s);",
                            (ci.system_name, ci.calc_type, ci.program, ci.method, ci.name))
             #self.c.execute("INSERT INTO calcs VALUES (:system_name, :calc_type, :program, :method, :name )",
                            #{'system_name': ci.system_name, 'calc_type': ci.calc_type, 'program': ci.program, 'method': ci.method, 'name': ci.name})
