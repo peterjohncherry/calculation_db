@@ -48,7 +48,7 @@ class CalcDB:
     def initial_test(self):
         print("into initial test")
         calcinfo_list = [BaseInfo('H2O',  'Free Energy', 'ReSpect-mDKS')]
-        cinfo_test = reader('CO')
+        cinfo_test = BaseInfo.buildfromfile('CO_base')
         calcinfo_list.append(cinfo_test.get_cinfo())
 
         print("len(calcinfo_list) = ", len(calcinfo_list))

@@ -1,3 +1,5 @@
+import yaml
+
 class BaseInfo:
 
     def __init__(self, system_name, calc_type, program, name="auto gen name"):
@@ -10,6 +12,14 @@ class BaseInfo:
             self.name = str(self.system_name + '_' + self.calc_type + '_' + self.program )
         else:
             self.name = name
+
+    @classmethod
+    def buildfromfile(cls, filename):
+        with open(filename) as f:
+            base_data = yaml.load(f, Loader=yaml.Loader)
+        print(base_data)
+        print("hello2")
+        return cls(base_data['system_name'], base_data['calc_type'], base_data['program'])
 
     def __repr__(self):
         return "CalcInfo(\n name ='{}'\n system_name = {}'\n calc_type = '{}'\n  program = '{}'".format(
