@@ -1,5 +1,6 @@
 import yaml
 
+
 class BaseInfo:
 
     def __init__(self, system_name, calc_type, program, name="auto gen name"):
@@ -37,6 +38,15 @@ class InpInfo:
         self.multiplicity = multiplicity
         self.charge = charge
 
+    @classmethod
+    def buildfromfile(cls, filename):
+        with open(filename) as f:
+            inp_data = yaml.load(f, Loader=yaml.Loader)
+        print(inp_data)
+
+        return cls(inp_data['method'], inp_data['nucleus_model'], inp_data['initialization'], inp_data['mulitplicity'],
+                   inp['charge'])
+
     def __repr__(self):
         return "InpInfo(\n method ='{}'\n nucleus_model = {}'\n initialization = '{}'\n  multiplicity = '{}'\n " \
                "charge ='{}'".format(self.method, self.nucleus_model, self.initialization, self.multiplicity,
@@ -44,7 +54,8 @@ class InpInfo:
 
 
 #    @property
-#    def get_calc_type(self):
+#    def get_calc_type(sel
+#    f):
 #        return '{}'.format(self.calc_type)
 
 #    @property

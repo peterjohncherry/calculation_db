@@ -1,4 +1,5 @@
 from cinfo import BaseInfo, InpInfo
+from uuid import uuid4
 from calc_info_reader import CalcInfoReader as reader
 
 
@@ -22,8 +23,8 @@ class CalcDB:
                                             method VARCHAR(100) NOT NULL,            
                                             nucleus_model VARCHAR(100),
                                             initialization VARCHAR(100),
-                                            multiplicity NUMERIC(1),
-                                            charge NUMERIC(2, 1),
+                                            multiplicity INTEGER,
+                                            charge DOUBLE PRECISION,
                                             UNIQUE(inp_uid)
                                             );
                             create table program(
@@ -47,22 +48,32 @@ class CalcDB:
 
     def initial_test(self):
         print("into initial test")
-        calcinfo_list = [BaseInfo('H2O',  'Free Energy', 'ReSpect-mDKS')]
-        cinfo_test = BaseInfo.buildfromfile('CO_base')
-        calcinfo_list.append(cinfo_test.get_cinfo())
 
-        print("len(calcinfo_list) = ", len(calcinfo_list))
-        for ci in calcinfo_list:
-            self.insert_calc_info(ci)
 
-        print(self.get_all_info('base'))
+        base_info_list = [BaseInfo('H2O', 'Free_Energy', 'ReSpect-mDKS')]
+        base_info_list.append(BaseInfo.buildfromfile('CO_base'))
 
-    def insert_calc_info(self, ci):
+        uuid_list = []
+        for ci in base_info_list:
+            uuid_list.append(uuid4())
+            self.insert_base_info(ci, uuid_list[-1])
+
+
+
+        print(self.get_all_info_from_table('base'))
+
+    def insert_base_info(self, binfo, uid):
         with self.conn:
-            self.c.execute("INSERT INTO base VALUES ( uuid_generate_v4(), %s, %s, %s )",
-                           (ci.name, ci.system_name, ci.calc_type))
+            self.c.execute("INSERT INTO base VALUES ( %s , %s, %s, %s )",
+                           (str(uid), binfo.name, binfo.system_name, binfo.calc_type))
 
-    def get_all_info(self, table_name):
+
+    def insert_inp_info(self, bi):
+        with self.conn:
+            self.c.execute("INSERT INTO base VALUES ( uuid_generate_v4(), %s, %s, %s, %d, %f )",
+                           (bi.method, bi.nucleus_model, bi.initialization, bi.multiplicity, bi.charge))
+
+    def get_all_info_from_table(self, table_name):
         self.c.execute("SELECT * FROM "+str(table_name)+";")
         return self.c.fetchall()
 
