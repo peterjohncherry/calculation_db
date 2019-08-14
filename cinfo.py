@@ -1,5 +1,5 @@
 import yaml
-
+import numpy as np
 
 class BaseInfo:
 
@@ -18,8 +18,6 @@ class BaseInfo:
     def buildfromfile(cls, filename):
         with open(filename) as f:
             base_data = yaml.load(f, Loader=yaml.Loader)
-        print(base_data)
-        print("hello2")
         return cls(base_data['system_name'], base_data['calc_type'], base_data['program'])
 
     def __repr__(self):
@@ -29,37 +27,27 @@ class BaseInfo:
 
 class InpInfo:
 
-    def __init__(self, method=None, nucleus_model=None, initialization=None,
-                 multiplicity=None, charge=None):
+    def __init__(self, method=None, nucleus_model=None, initialization=None, multiplicity=None, charge=None):
 
         self.method = method
         self.nucleus_model = nucleus_model
         self.initialization = initialization
-        self.multiplicity = multiplicity
-        self.charge = charge
+        if multiplicity is not None:
+            self.multiplicity = int(multiplicity)
+
+        if charge is not None:
+            self.charge = float(charge)
 
     @classmethod
     def buildfromfile(cls, filename):
         with open(filename) as f:
             inp_data = yaml.load(f, Loader=yaml.Loader)
-        print(inp_data)
 
-        return cls(inp_data['method'], inp_data['nucleus_model'], inp_data['initialization'], inp_data['mulitplicity'],
-                   inp['charge'])
+        return cls(inp_data['method'], inp_data['nucleus_model'], inp_data['initialization'], inp_data['multiplicity'],
+                   inp_data['charge'])
 
     def __repr__(self):
-        return "InpInfo(\n method ='{}'\n nucleus_model = {}'\n initialization = '{}'\n  multiplicity = '{}'\n " \
-               "charge ='{}'".format(self.method, self.nucleus_model, self.initialization, self.multiplicity,
+        return "InpInfo(\n method ='{}'\n nucleus_model = {}'\n initialization = '{}'\n  multiplicity = {}\n " \
+               "charge ={}".format(self.method, self.nucleus_model, self.initialization, self.multiplicity,
                                      self.multiplicity, self.charge)
-
-
-#    @property
-#    def get_calc_type(sel
-#    f):
-#        return '{}'.format(self.calc_type)
-
-#    @property
-#    def method(self):
-#        return '{}'.format(self.method)
-
 
